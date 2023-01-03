@@ -18,7 +18,7 @@ node master.puppet {
 node slave1.puppet {
   include web_server
   
-  -> file { '/var/www/html/index.html':
+  file { '/var/www/html/index.html':
     ensure  => present,
     source => "file:///vagrant/pages/index.html",
 	replace => true,
