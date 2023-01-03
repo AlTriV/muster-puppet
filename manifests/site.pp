@@ -9,7 +9,8 @@ node master.puppet {
     path => ['/usr/bin', '/usr/sbin',],
   }
   
-  service { 'firewalld':
-    ensure => running,
+  exec { 'restart firewalld':
+    command => 'systemctl restart firewalld.service',
+    path => ['/usr/bin', '/usr/sbin',],
   }
 }
