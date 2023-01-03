@@ -1,7 +1,7 @@
 node master.puppet {
   file { '/etc/puppetlabs/puppet/autosign.conf':
     ensure => file,
-    content => 'slave1.puppet"\n"slave2.puppet',    
+    content => 'slave1.puppet\nslave2.puppet',    
   }
   
   exec { 'allow_puppet_connection':
