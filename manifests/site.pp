@@ -14,3 +14,56 @@ node master.puppet {
     path => ['/usr/bin', '/usr/sbin',],
   }
 }
+
+node slave1.puppet, slave2.puppet {
+  package { 'httpd':
+    ensure => 'installed',
+  }
+  
+  exec { 'allow http':
+    command => 'firewall-cmd --permanent --add-service=http',
+    path => ['/usr/bin', '/usr/sbin',],
+  }
+  
+  exec { 'restart firewalld':
+    command => 'firewall-cmd --reload',
+    path => ['/usr/bin', '/usr/sbin',],
+  }
+  
+  service { 'httpd':
+    ensure => running,
+	enable => true,
+  }
+}
+
+node slave1.puppet {
+  file { '/var/www/html/index.html':
+    ensure  => present,
+    source => "file:///vagrant/pages/index.html",
+	replace => true,
+  }
+}
+
+
+node slave2.puppet {
+  $packages = [ 'php', 'php-fpm' ]
+  package { 'httpd':
+    ensure => 'installed',
+  }
+  
+  service { 'php-fpm':
+    ensure => running,
+	enable => true,
+  }
+  
+  exec { 'restart httpd':
+    command => 'systemctl restart httpd',
+    path => ['/usr/bin', '/usr/sbin',],
+  }
+  
+  file { '/var/www/html/index.php':
+    ensure  => present,
+    source => "file:///vagrant/pages/index.php",
+	replace => true,
+  }
+}
