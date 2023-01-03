@@ -4,7 +4,7 @@ node master.puppet {
     content => "slave1.puppet",    
   }
   
-  firewalld_custom_service { 'puppet':
+  firewalld::custom_service { 'puppet':
     short => 'puppet',
     description => 'Puppet Client access Puppet Server',
 	port => {
