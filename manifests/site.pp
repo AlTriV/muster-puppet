@@ -1,7 +1,7 @@
 node master.puppet {
   file { '/etc/puppetlabs/puppet/autosign.conf':
     ensure => file,
-    content => "Test",    
+    content => "slave1.puppet",    
   }
   
   firewalld_custom_service { 'puppet':
