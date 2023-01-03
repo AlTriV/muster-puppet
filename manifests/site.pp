@@ -10,6 +10,6 @@ node master.puppet {
   }
   
   service { 'firewalld':
-    restart,
+    ensure => restart,
   }
 }
