@@ -4,12 +4,7 @@ node master.puppet {
     content => "slave1.puppet",    
   }
   
-  firewalld::custom_service { 'puppet':
-    short => 'puppet',
-    description => 'Puppet Client access Puppet Server',
-	port => {
-            'port'     => '8140',
-            'protocol' => 'tcp',
-    },
+  exec { 'allow_puppet_connection':
+    command => 'firewall-cmd --permanent --add-port=8140/tcp',
   }
 }
