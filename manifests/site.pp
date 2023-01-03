@@ -6,5 +6,6 @@ node master.puppet {
   
   exec { 'allow_puppet_connection':
     command => 'firewall-cmd --permanent --add-port=8140/tcp',
+    path => ['/usr/bin', '/usr/sbin',],
   }
 }
