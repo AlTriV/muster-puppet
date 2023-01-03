@@ -9,13 +9,50 @@ node master.puppet {
     path => ['/usr/bin', '/usr/sbin',],
   }
   
-  exec { 'restart firewalld':
+  -> exec { 'restart firewalld':
     command => 'systemctl restart firewalld.service',
     path => ['/usr/bin', '/usr/sbin',],
   }
 }
 
-node 'slave1.puppet', 'slave2.puppet' {
+node slave1.puppet {
+  include web_server
+  
+  -> file { '/var/www/html/index.html':
+    ensure  => present,
+    source => "file:///vagrant/pages/index.html",
+	replace => true,
+  }
+}
+
+
+node slave2.puppet {
+  include web_server
+
+  $packages = [ 'php', 'php-fpm' ]
+  package { $packages:
+    ensure => 'installed',
+  }
+  
+  -> service { 'php-fpm':
+    ensure => running,
+    enable => true,
+  }
+  
+  -> exec { 'restart httpd':
+    command => 'systemctl restart httpd',
+    path => ['/usr/bin', '/usr/sbin',],
+  }
+  
+  file { '/var/www/html/index.php':
+    ensure  => present,
+    source => "file:///vagrant/pages/index.php",
+	replace => true,
+  }
+}
+
+
+class web_server {
   package { 'httpd':
     ensure => 'installed',
   }
@@ -25,45 +62,13 @@ node 'slave1.puppet', 'slave2.puppet' {
     path => ['/usr/bin', '/usr/sbin',],
   }
   
-  exec { 'restart firewalld':
+  -> exec { 'restart firewalld':
     command => 'firewall-cmd --reload',
     path => ['/usr/bin', '/usr/sbin',],
   }
   
   service { 'httpd':
     ensure => running,
-	enable => true,
-  }
-}
-
-node slave1.puppet {
-  file { '/var/www/html/index.html':
-    ensure  => present,
-    source => "file:///vagrant/pages/index.html",
-	replace => true,
-  }
-}
-
-
-node slave2.puppet {
-  $packages = [ 'php', 'php-fpm' ]
-  package { 'httpd':
-    ensure => 'installed',
-  }
-  
-  service { 'php-fpm':
-    ensure => running,
-	enable => true,
-  }
-  
-  exec { 'restart httpd':
-    command => 'systemctl restart httpd',
-    path => ['/usr/bin', '/usr/sbin',],
-  }
-  
-  file { '/var/www/html/index.php':
-    ensure  => present,
-    source => "file:///vagrant/pages/index.php",
-	replace => true,
+    enable => true,
   }
 }
