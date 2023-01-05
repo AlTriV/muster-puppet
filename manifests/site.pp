@@ -9,7 +9,9 @@ node master.puppet {
     path => ['/usr/bin', '/usr/sbin',],
   }
   
-  -> exec { 'restart firewalld':
+  include nginx_reverse_proxy
+  
+  exec { 'restart firewalld':
     command => 'systemctl restart firewalld.service',
     path => ['/usr/bin', '/usr/sbin',],
   }
@@ -68,6 +70,22 @@ class web_server {
   }
   
   service { 'httpd':
+    ensure => running,
+    enable => true,
+  }
+}
+
+class nginx_reverse_proxy {
+  package { 'nginx':
+    ensure => 'installed',
+  }
+  
+  exec { 'allow http':
+    command => 'firewall-cmd --permanent --add-service=http',
+    path => ['/usr/bin', '/usr/sbin',],
+  }
+  
+  service { 'nginx':
     ensure => running,
     enable => true,
   }
