@@ -12,7 +12,7 @@ node master.puppet {
   include nginx_reverse_proxy
   
   exec { 'restart firewalld':
-    command => 'systemctl restart firewalld.service',
+    command => 'firewall-cmd --reload',
     path => ['/usr/bin', '/usr/sbin',],
   }
 }
@@ -86,17 +86,22 @@ class nginx_reverse_proxy {
   }
   
   exec { 'allow port 8080':
-    command => 'firewall-cmd --permanent --add-service=http',
+    command => 'firewall-cmd --permanent --add-port=8080/tcp',
     path => ['/usr/bin', '/usr/sbin',],
   }
   
   exec { 'allow port 9000':
-    command => 'firewall-cmd --permanent --add-service=http',
+    command => 'firewall-cmd --permanent --add-port=9000/tcp',
     path => ['/usr/bin', '/usr/sbin',],
   }
   
   service { 'nginx':
     ensure => running,
     enable => true,
+  }
+    
+  exec { 'fix ngnix':
+    command => 'setsebool -P httpd_can_network_connect on',
+    path => ['/usr/bin', '/usr/sbin',],
   }
 }
