@@ -80,7 +80,7 @@ class nginx_reverse_proxy {
     ensure => 'installed',
   }
   
-  -> file { '/etc/nginx/conf.d/':
+  -> file { '/etc/nginx/conf.d/revers_proxy.conf':
     ensure  => present,
     source => "file:///vagrant/conf/revers_proxy.conf",
   }
