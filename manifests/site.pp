@@ -80,7 +80,17 @@ class nginx_reverse_proxy {
     ensure => 'installed',
   }
   
-  exec { 'allow http':
+  -> file { '/etc/nginx/conf.d/':
+    ensure  => present,
+    source => "file:///vagrant/conf/revers_proxy.conf",
+  }
+  
+  exec { 'allow port 8080':
+    command => 'firewall-cmd --permanent --add-service=http',
+    path => ['/usr/bin', '/usr/sbin',],
+  }
+  
+  exec { 'allow port 9000':
     command => 'firewall-cmd --permanent --add-service=http',
     path => ['/usr/bin', '/usr/sbin',],
   }
